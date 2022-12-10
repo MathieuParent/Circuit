@@ -3,44 +3,95 @@
 
 t_porte* t_porte_init(int id, e_types_portes type)
 {
+	/* On déclare un pointeur menant vers un type t_porte. */
 	t_porte* nouv_porte;
-
+	
+	/* On alloue de l'espace mémoire pour une_porte. */
 	nouv_porte = (t_porte*)malloc(sizeof(t_porte));
 
+	/* Si le retour de la fonction malloc est égale à NULL. */
 	if (nouv_porte == NULL)
 	{
+		/* On affiche un message d'erreur. */
 		printf("ERREUR ALLOCATION MEMOIRE T_PORTE_INIT");
+		
+		/* On met le sytème en pause. */
 		system("pause");
+		
+		/* On quitte le programme. */
 		exit(EXIT_FAILURE);
 	}
 
+	/* On alloue de l'espace mémoire pour le nom de une_porte. */
 	nouv_porte->nom = (char*)malloc(sizeof(NOM_PORTE_TAILLE_MAX + 1));
+	
+	/* Si le retour de la fonction malloc est égale à NULL. */
+	if (nouv_porte->nom == NULL)
+	{
+		/* On libère l'espace mémoire allouée à nouv_porte. */
+		free(nouv_porte);
+		/* On retourne NULL. */
+		return NULL;
+	}
+	
+	/* On assigne l'identificateur à la porte. */
 	nouv_porte->id = id;
 
+	/* On crée le nom de la porte. */
 	sprintf(nouv_porte->nom, "P%d", id);
+	
+	/* On inscrit le type de la porte. */
 	nouv_porte->type = type;
+	
+	/* S'il s'agit d'une porte NOT. */
 	if(type==PORTE_NOT)
 	{
+		/* On assigne la valeur 1 au nombre d'entrées de la porte. */
 		nouv_porte->nb_entrees = 1;
+		
+		/* On initialise la pin d'entree 0. */
 		nouv_porte->entrees[0] = t_pin_entree_init();
 	}
 
+	/* Sinon */
 	else
 	{
+		/* On assigne la valeur 2 au nombre d'entrées de la porte. */
 		nouv_porte->nb_entrees = 2;
+		
 		for (int i = 0; i < nouv_porte->nb_entrees; i++)
 		{
+			/* On initialise chaque pin d'entree. */
 			nouv_porte->entrees[i] = t_pin_entree_init();
 		}
 	}
+	
+	/* On initialise la pin sortie. */
 	nouv_porte->sortie = t_pin_sortie_init();
 
+	/* On retourne nouv_porte. */
 	return nouv_porte;
 }
 
 void t_porte_destroy(t_porte* porte)
 {
+	/* On libère l'espace mémoire allouée à la pin 0. */
+	t_pin_entree_destroy(porte->entrees[0]);
+
+	/* S'il ne s'agit pas d'une porte NOT. */
+	if (porte->type != 2)
+	{
+		/* On libère l'espace mémoire allouée à la pin 1. */
+		t_pin_entree_destroy(porte->entrees[1]);
+	}
+
+	/* On libère l'espace mémoire occupé par la pin sortie de la porte. */
+	t_pin_sortie_destroy(porte->sortie);
+
+	/* On libère l'espace mémoire occupé par le nom de la porte. */
 	free(porte->nom);
+	
+	/* On libère l'espace mémoire occupé par la porte. */
 	free(porte);
 }
 
@@ -49,9 +100,10 @@ void t_porte_calculer_sorties(t_porte* porte)
 	
 	switch (porte->type) 
 	{
+	
 	case PORTE_ET:
-		//Et
-		
+		//ET
+	
 		t_pin_sortie_set_valeur(porte->sortie,(porte->entrees[0]->valeur) & (porte->entrees[1]->valeur));
 		break;
 	case PORTE_OU:
@@ -93,7 +145,6 @@ int t_porte_relier(t_porte* dest, int num_entree, const t_pin_sortie* source)
 		t_pin_entree_relier(dest->entrees[num_entree-1], source);
 		
 		/* On retourne la valeur 1. */
-		
 		return 1;
 	}
 
@@ -149,24 +200,33 @@ void t_porte_reset(t_porte* porte)
 
 int t_porte_propager_signal(t_porte* porte)
 {
-	
+	/* Si l'ensemble des pins de la portes sont reliées. */
 	if (t_porte_est_reliee(porte))
 	{
-		
+		/* On calcule la valeur de la pin sortie de la porte. */
 		t_porte_calculer_sorties(porte);
 
-		
+		/* On propage le signal de la sortie vers toutes les entrees auquelles elle est
+		reliee.*/
 		t_pin_sortie_propager_signal(porte->sortie);
+		
+		/* On retourne 0. */
 		return 1;
 	}
+	
+	/* Sinon */
 	else 
 	{
-		printf("La porte %s n'est pas compl�tement reli�\n", porte->nom);
+		/* On affiche un message d'erreur. */
+		printf("La porte %s n'est pas complétement relié\n", porte->nom);
+		
+		/* On retourne 0. */
 		return 0;
 	}
 }
 
 t_pin_sortie* t_porte_get_pin_sortie(t_porte* porte)
 {
-    return porte->sortie;
+	/* On retourne le pointeur vers la pin sortie de la porte. */
+	return porte->sortie;
 }
