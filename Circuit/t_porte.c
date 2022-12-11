@@ -12,18 +12,22 @@ t_porte* t_porte_init(int id, e_types_portes type)
 	/* Si le retour de la fonction malloc est égale à NULL. */
 	if (nouv_porte == NULL)
 	{
-		/* On affiche un message d'erreur. */
-		printf("ERREUR ALLOCATION MEMOIRE T_PORTE_INIT");
-		
-		/* On met le système en pause. */
-		system("pause");
-		
 		/* On quitte le programme. */
 		exit(EXIT_FAILURE);
 	}
 	
 	/* On alloue de l'espace mémoire pour le nom de nouv_porte. */
-	nouv_porte->nom = (char*)malloc(sizeof(NOM_PORTE_TAILLE_MAX + 1));
+	nouv_porte->nom = (char*)malloc(sizeof(NOM_PORTE_TAILLE_MAX + 1));                                  
+
+	/* Si le retour de la fonction malloc est égale à NULL. */
+	if (nouv_porte->nom == NULL)
+	{
+		/* On libère l'espace mémoire allouée à une_porte. */
+		free(nouv_porte);
+		
+		/* On quitte le programme. */
+		exit(EXIT_FAILURE);
+	}
 	
 	/* On assigne l'identificateur à la porte. */
 	nouv_porte->id = id;
@@ -144,7 +148,6 @@ int t_porte_relier(t_porte* dest, int num_entree, const t_pin_sortie* source)
 		t_pin_entree_relier(dest->entrees[num_entree-1], source);
 		
 		/* On retourne la valeur 1. */
-		
 		return 1;
 	}
 
