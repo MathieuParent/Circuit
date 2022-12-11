@@ -16,6 +16,16 @@ t_entree* t_entree_init(int num)
 	/* On alloue de l'espace mémoire pour le nom de nouvelle_entree. */
 	nouv_entree->nom = (char*)malloc(sizeof(NOM_ENTREE_TAILLE_MAX + 1));
 
+	/* Si le retour de la fonction malloc est égale à NULL. */
+	if (nouv_entree->nom == NULL)
+	{
+		/* On libère l'espace mémoire allouée à nouvelle_entree. */
+		free(nouv_entree);
+		
+		/* On quitte le programme. */
+		EXIT_FAILURE;
+	}
+	
 	/* On assigne l'identificateur à l'entrée. */
 	nouv_entree->id = num;
 	
