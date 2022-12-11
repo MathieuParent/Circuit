@@ -207,13 +207,14 @@ int t_porte_propager_signal(t_porte* porte)
 		
 		/* On calcule la valeur de la pin sortie de la porte. */
 		t_porte_calculer_sorties(porte);
-
-		/* On propage le signal de la sortie vers toutes les entrees auquelles elle est
-		reliee. */
-		t_pin_sortie_propager_signal(porte->sortie);
 		
-		/* On retourne la valeur 1. */
-		return 1;
+		/* On propage le signal de la sortie vers toutes les entrees auquelles elle est
+		reliee. Si le retour de la foction est égale à 1. */
+		if (t_pin_sortie_propager_signal(porte->d) == 1)
+		{
+			/* On retourne la valeur 1. */
+			return 1;
+		}
 	}
 	
 	/* Sinon */
